@@ -45,7 +45,7 @@ class ProductsImportCommand extends Command
 
         $now = new \DateTimeImmutable('now');
 
-        $filePath = "%kernel.root_dir%/../public/stock.csv";    //CSV file for import
+        $filePath = "%kernel.root_dir%/../public/1stock.csv";    //CSV file for import
 
         $fileData = $this->EntityManager->getRepository(FileParser::class)->loadData($filePath);    //loading CSV data
 
@@ -62,7 +62,7 @@ class ProductsImportCommand extends Command
             ]);
 
             if ($product === null){     // if product absent in database
-                if (((float)$fileRow['Cost in GBP'] < Product::MIN_COST && (int)$fileRow['Stock'] < Product::MIN_STOCK ) || ((float)$fileRow['Cost in GBP'] > 1000) ){
+                if (((float)$fileRow['Cost in GBP'] < Product::MIN_COST && (int)$fileRow['Stock'] < Product::MIN_STOCK ) || ((float)$fileRow['Cost in GBP'] > Product::MAX_COST) ){
                     // Import Rules implementation
                     $skippedProducts[] = $fileRow['Product Name']." (".$fileRow['Product Code']."). Import rules restrict inserting.";
                     $this->skippedCount++;
