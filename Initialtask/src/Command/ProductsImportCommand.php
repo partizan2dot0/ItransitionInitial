@@ -45,7 +45,7 @@ class ProductsImportCommand extends Command
 
         $now = new \DateTimeImmutable('now');
 
-        $filePath = "%kernel.root_dir%/../public/1stock.csv";    //CSV file for import
+        $filePath = "%kernel.root_dir%/../public/stock.csv";    //CSV file for import
 
         $fileData = $this->EntityManager->getRepository(FileParser::class)->loadData($filePath);    //loading CSV data
 
