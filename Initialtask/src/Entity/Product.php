@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\Types\Self_;
 
 /**
  * @ORM\Table(name="tblProductData")
@@ -30,7 +31,7 @@ class Product
     private $name;
 
     /**
-     * @ORM\Column(name="strProductCode", type="string", length=10)
+     * @ORM\Column(name="strProductCode", type="string", length=10, unique=true)
      */
     private $code;
 
@@ -74,7 +75,7 @@ class Product
         return $this->name;
     }
 
-    public function setName(string $name): self
+    private function setName(string $name): self
     {
         $this->name = $name;
 
@@ -86,7 +87,7 @@ class Product
         return $this->code;
     }
 
-    public function setCode(string $code): self
+    private function setCode(string $code): self
     {
         $this->code = $code;
 
@@ -98,7 +99,7 @@ class Product
         return $this->description;
     }
 
-    public function setDescription(string $description): self
+    private function setDescription(string $description): self
     {
         $this->description = $description;
 
@@ -110,7 +111,7 @@ class Product
         return $this->stock;
     }
 
-    public function setStock(?int $stock): self
+    private function setStock(?int $stock): self
     {
         $this->stock = $stock;
 
@@ -122,7 +123,7 @@ class Product
         return $this->cost;
     }
 
-    public function setCost(?float $cost): self
+    private function setCost(?float $cost): self
     {
         $this->cost = $cost;
 
@@ -134,9 +135,13 @@ class Product
         return $this->discontinued;
     }
 
-    public function setDiscontinued(?\DateTimeInterface $discontinued): self
+    private function setDiscontinued(string $discontinued): self
     {
-        $this->discontinued = $discontinued;
+        if ($discontinued === 'yes'){
+            $this->discontinued = new \DateTimeImmutable('now');     //if discontinued setting current date
+        } else {
+            $this->discounted = null;
+        }
 
         return $this;
     }
@@ -146,7 +151,7 @@ class Product
         return $this->added;
     }
 
-    public function setAdded(?\DateTimeInterface $added): self
+    private function setAdded(?\DateTimeInterface $added): self
     {
         $this->added = $added;
 
@@ -158,10 +163,33 @@ class Product
         return $this->updated;
     }
 
-    public function setUpdated(?\DateTimeInterface $updated): self
+    private function setUpdated(?\DateTimeInterface $updated): self
     {
         $this->updated = $updated;
 
         return $this;
     }
+
+    public static function checkConditions(array  $productData): bool  // Import Rules implementation
+    {
+        if ( ((float)$productData['Cost in GBP'] < self::MIN_COST && (int)$productData['Stock'] < self::MIN_STOCK)
+          || ((float)$productData['Cost in GBP'] > self::MAX_COST) ) {
+            return true;
+        }
+        return false;
+    }
+
+    public function __construct(array $productData)
+    {
+        $this->setName($productData['Product Name'])
+        ->setCode($productData['Product Code'])
+        ->setDescription($productData['Product Description'])
+        ->setCost((float)$productData['Cost in GBP'])
+        ->setStock((int)$productData['Stock'])
+        ->setAdded($now)
+        ->setDiscontinued($productData['Discontinued'])
+        ->setUpdated($now);
+    }
+
+
 }

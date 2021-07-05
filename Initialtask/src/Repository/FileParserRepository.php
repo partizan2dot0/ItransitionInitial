@@ -7,12 +7,6 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use League\Csv\Reader;
 
-/**
- * @method FileParser|null find($id, $lockMode = null, $lockVersion = null)
- * @method FileParser|null findOneBy(array $criteria, array $orderBy = null)
- * @method FileParser[]    findAll()
- * @method FileParser[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
 class FileParserRepository extends ServiceEntityRepository
 {
 
@@ -30,6 +24,11 @@ class FileParserRepository extends ServiceEntityRepository
         } else {
             return ["error" => "File does not exist. File path = $filePath "];
         }
+    }
+
+    public function fullData()
+    {
+        return [];
     }
 
 }
