@@ -1,0 +1,6 @@
+# config/doctrine/Product.orm.yml
+App\Entity\Product:
+  type: entity
+  # ...
+  lifecycleCallbacks:
+    prePersist: ['setAdded']

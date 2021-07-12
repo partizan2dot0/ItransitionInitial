@@ -3,11 +3,14 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use App\Validator\ProductValidator;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="tblProductData")
  * @ORM\Entity(repositoryClass=ProductRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class Product
 {
@@ -26,11 +29,13 @@ class Product
 
     /**
      * @ORM\Column(name="strProductName", type="string", length=50)
+     * @Assert\NotBlank
      */
     private $name;
 
     /**
      * @ORM\Column(name="strProductCode", type="string", length=10, unique=true)
+     * @Assert\NotBlank
      */
     private $code;
 
@@ -45,7 +50,7 @@ class Product
     private $stock;
 
     /**
-     * @ORM\Column(name="floatCost", type="float", nullable=true)
+     * @ORM\Column(name="intCost", type="integer", nullable=true)
      */
     private $cost;
 
@@ -56,6 +61,8 @@ class Product
 
     /**
      * @ORM\Column(name="dtmAdded", type="datetime", nullable=true)
+     * @Assert\DateTime
+     * @var string A "Y-m-d H:i:s" formatted value
      */
     private $added;
 
@@ -74,11 +81,9 @@ class Product
         return $this->name;
     }
 
-    private function setName(string $name): self
+    private function setName(string $name): void
     {
         $this->name = $name;
-
-        return $this;
     }
 
     public function getCode(): ?string
@@ -86,11 +91,9 @@ class Product
         return $this->code;
     }
 
-    private function setCode(string $code): self
+    private function setCode(string $code): void
     {
         $this->code = $code;
-
-        return $this;
     }
 
     public function getDescription(): ?string
@@ -98,11 +101,9 @@ class Product
         return $this->description;
     }
 
-    private function setDescription(string $description): self
+    private function setDescription(string $description): void
     {
         $this->description = $description;
-
-        return $this;
     }
 
     public function getStock(): ?int
@@ -110,23 +111,19 @@ class Product
         return $this->stock;
     }
 
-    private function setStock(?int $stock): self
+    private function setStock(?int $stock): void
     {
         $this->stock = $stock;
-
-        return $this;
     }
 
     public function getCost(): ?float
     {
-        return $this->cost;
+        return $this->cost/100;
     }
 
-    private function setCost(?float $cost): self
+    private function setCost(?float $cost): void
     {
-        $this->cost = $cost;
-
-        return $this;
+        $this->cost = intval($cost*100);
     }
 
     public function getDiscontinued(): ?\DateTimeInterface
@@ -134,15 +131,13 @@ class Product
         return $this->discontinued;
     }
 
-    private function setDiscontinued(string $discontinued): self
+    private function setDiscontinued($discontinued): void
     {
         if ('yes' === $discontinued) {
             $this->discontinued = new \DateTimeImmutable('now');     //if discontinued setting current date
         } else {
             $this->discontinued = null;
         }
-
-        return $this;
     }
 
     public function getAdded(): ?\DateTimeInterface
@@ -150,11 +145,12 @@ class Product
         return $this->added;
     }
 
-    private function setAdded(?\DateTimeInterface $added): self
+    /**
+     * @ORM\PrePersist
+     */
+    public function setAdded(): void
     {
-        $this->added = $added;
-
-        return $this;
+        $this->added = new \DateTimeImmutable('now');
     }
 
     public function getUpdated(): ?\DateTimeInterface
@@ -162,33 +158,20 @@ class Product
         return $this->updated;
     }
 
-    private function setUpdated(?\DateTimeInterface $updated): self
-    {
-        $this->updated = $updated;
-
-        return $this;
-    }
-
     public static function checkConditions(array $productData): bool  // Import Rules implementation
     {
-        if (((float) $productData['Cost in GBP'] < self::MIN_COST && (int) $productData['Stock'] < self::MIN_STOCK)
-          || ((float) $productData['Cost in GBP'] > self::MAX_COST)) {
-            return true;
-        }
-
-        return false;
+        return ProductValidator::validate($productData);
     }
 
     public function __construct(array $productData)
     {
-        $now = new \DateTimeImmutable('now');
-        $this->setName($productData['Product Name'])
-        ->setCode($productData['Product Code'])
-        ->setDescription($productData['Product Description'])
-        ->setCost((float) $productData['Cost in GBP'])
-        ->setStock((int) $productData['Stock'])
-        ->setAdded($now)
-        ->setDiscontinued($productData['Discontinued'])
-        ->setUpdated($now);
+//        $now = new \DateTimeImmutable('now');
+        $this->setName($productData['Product Name']);
+        $this->setCode($productData['Product Code']);
+        $this->setDescription($productData['Product Description']);
+        $this->setCost((float) $productData['Cost in GBP']);
+        $this->setStock((int) $productData['Stock']);
+//        $this->setAdded($now);
+        $this->setDiscontinued($productData['Discontinued']);
     }
 }

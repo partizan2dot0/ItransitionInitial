@@ -4,12 +4,17 @@ namespace App\Command;
 
 use App\Entity\FileParser;
 use App\Entity\Product;
+use App\Repository\FileParserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
+use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use App\Service\ProductService;
+use App\Service\FileParserService;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProductsImportCommand extends Command
 {
@@ -17,17 +22,22 @@ class ProductsImportCommand extends Command
 
     private $entityManager;
     private $container;
+    private $productService;
+    private $fileParserService;
+    private $validator;
 
     private $processedCount = 0;
-    private $skippedCount = 0;
-    private $successCount = 0;
 
-    public function __construct(EntityManagerInterface $em, ContainerInterface $cont)
+    public function __construct(EntityManagerInterface $em, ContainerInterface $cont, ProductService $productService,
+                                FileParserService $fileParserService, ValidatorInterface $validator)
     {
         parent::__construct();
 
         $this->entityManager = $em;
         $this->container = $cont;
+        $this->productService = $productService;
+        $this->fileParserService = $fileParserService;
+        $this->validator = $validator;
     }
 
     protected function configure(): void
@@ -43,7 +53,7 @@ class ProductsImportCommand extends Command
 
         $filePath = $this->container->getParameter('filepath');
 
-        $fileData = $this->entityManager->getRepository(FileParser::class)->loadData($filePath);    //loading CSV data
+        $fileData = $this->fileParserService->loadData($filePath);
 
         if (!is_object($fileData)) {
             $output->writeln('<error>'.$fileData['error'].'</error>');
@@ -53,21 +63,28 @@ class ProductsImportCommand extends Command
 
         $parser = new FileParser();
         foreach ($fileData as $fileRow) {
-            $product = $this->entityManager->getRepository(Product::class)->findOneBy([
+            $product = $this->productService->findOneBy([
                 'code' => $fileRow['Product Code'],
             ]);
 
             if (null === $product) {     // if product absent in database
-                if (Product::checkConditions($fileRow)) {
+                if (!Product::checkConditions($fileRow)) {
                     $parser->fixImportReject($fileRow, $parser::IMPORT_RULES);
                 } else {
+
                     $product = new Product($fileRow);
 
-                    if (!$testMode) { // NO any actions in database during  test mode
-                        $this->entityManager->persist($product);
-                        $this->entityManager->flush();
+                    $errors = $this->validator->validate($product);
+
+                    if (count($errors) > 0) {
+                        $parser->fixImportReject($fileRow, (string) $errors);
+                    } else {
+                        if (!$testMode) { // NO any actions in database during  test mode
+                            $this->entityManager->persist($product);
+                            $this->entityManager->flush();
+                        }
+                        $parser->incCounter('successCount');
                     }
-                    $parser->incCounter('successCount');
                 }
             } else {
                 $parser->fixImportReject($fileRow, $parser::CODE_REPEATING);
