@@ -17,6 +17,7 @@ class ProductTest extends \PHPUnit\Framework\TestCase
         ];
 
         $product = new Product($productData);
+        $product->setAdded();
 
         return $product;
     }
@@ -82,25 +83,12 @@ class ProductTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(\DateTimeImmutable::class, $this->createTestProduct()->getAdded());
     }
 
-    public function testSetUpdated()
-    {
-        $newUpdated = new \DateTimeImmutable('+1 day');
-        $testProd = $this->createTestProduct();
-        $this->callMethod($testProd,'setUpdated', ['updated' => $newUpdated]);
-        $this->assertEquals($testProd->getUpdated(), $newUpdated);
-    }
-
     public function testSetDiscontinued()
     {
         $newDiscounted = "yes";
         $testProd = $this->createTestProduct();
         $this->callMethod($testProd,'setDiscontinued', ['discontinued' => $newDiscounted]);
         $this->assertNotEmpty($testProd->getDiscontinued());
-    }
-
-    public function testGetUpdated()
-    {
-        $this->assertInstanceOf(\DateTimeImmutable::class, $this->createTestProduct()->getUpdated());
     }
 
     public function testSetCode()
@@ -118,10 +106,9 @@ class ProductTest extends \PHPUnit\Framework\TestCase
 
     public function testSetAdded()
     {
-        $newAdded = new \DateTimeImmutable('-3 day');
         $testProd = $this->createTestProduct();
-        $this->callMethod($testProd,'setAdded', ['added' => $newAdded]);
-        $this->assertEquals($testProd->getAdded(), $newAdded);
+        $this->callMethod($testProd,'setAdded');
+        $this->assertInstanceOf(\DateTimeImmutable::class, $testProd->getAdded());
     }
 
     public function testSetName()
