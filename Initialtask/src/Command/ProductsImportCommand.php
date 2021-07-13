@@ -4,16 +4,14 @@ namespace App\Command;
 
 use App\Entity\FileParser;
 use App\Entity\Product;
-use App\Repository\FileParserRepository;
+use App\Service\FileParserService;
+use App\Service\ProductService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
-use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use App\Service\ProductService;
-use App\Service\FileParserService;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProductsImportCommand extends Command
@@ -71,7 +69,6 @@ class ProductsImportCommand extends Command
                 if (!Product::checkConditions($fileRow)) {
                     $parser->fixImportReject($fileRow, $parser::IMPORT_RULES);
                 } else {
-
                     $product = new Product($fileRow);
 
                     $errors = $this->validator->validate($product);

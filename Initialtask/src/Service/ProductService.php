@@ -13,8 +13,8 @@ class ProductService
         $this->productRepository = $productRepository;
     }
 
-    public function findAll() {
-
+    public function findAll()
+    {
         $data = $this->productRepository->findAll();
 
         return $data;
@@ -25,4 +25,3 @@ class ProductService
         return $this->productRepository->findOneBy($criteria);
     }
 }
-

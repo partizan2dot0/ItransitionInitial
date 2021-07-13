@@ -4,7 +4,6 @@ namespace App\Entity;
 
 class ProductTest extends \PHPUnit\Framework\TestCase
 {
-
     private function createTestProduct()
     {
         $productData = [
@@ -22,7 +21,7 @@ class ProductTest extends \PHPUnit\Framework\TestCase
         return $product;
     }
 
-    private function callMethod($object, string $method , array $parameters = [])
+    private function callMethod($object, string $method, array $parameters = [])
     {
         try {
             $className = get_class($object);
@@ -66,7 +65,7 @@ class ProductTest extends \PHPUnit\Framework\TestCase
     {
         $newDesc = 'newDescription';
         $testProd = $this->createTestProduct();
-        $this->callMethod($testProd, 'setDescription', ['description'=> $newDesc]);
+        $this->callMethod($testProd, 'setDescription', ['description' => $newDesc]);
         $this->assertEquals($testProd->getDescription(), $newDesc);
     }
 
@@ -74,7 +73,7 @@ class ProductTest extends \PHPUnit\Framework\TestCase
     {
         $newCost = 100.55;
         $testProd = $this->createTestProduct();
-        $this->callMethod($testProd,'setCost', ['cost'=> $newCost]);
+        $this->callMethod($testProd, 'setCost', ['cost' => $newCost]);
         $this->assertEquals($testProd->getCost(), $newCost);
     }
 
@@ -85,9 +84,9 @@ class ProductTest extends \PHPUnit\Framework\TestCase
 
     public function testSetDiscontinued()
     {
-        $newDiscounted = "yes";
+        $newDiscounted = 'yes';
         $testProd = $this->createTestProduct();
-        $this->callMethod($testProd,'setDiscontinued', ['discontinued' => $newDiscounted]);
+        $this->callMethod($testProd, 'setDiscontinued', ['discontinued' => $newDiscounted]);
         $this->assertNotEmpty($testProd->getDiscontinued());
     }
 
@@ -95,7 +94,7 @@ class ProductTest extends \PHPUnit\Framework\TestCase
     {
         $newCode = 'newCode';
         $testProd = $this->createTestProduct();
-        $this->callMethod($testProd,'setCode', ['code' => $newCode]);
+        $this->callMethod($testProd, 'setCode', ['code' => $newCode]);
         $this->assertEquals($testProd->getCode(), $newCode);
     }
 
@@ -107,7 +106,7 @@ class ProductTest extends \PHPUnit\Framework\TestCase
     public function testSetAdded()
     {
         $testProd = $this->createTestProduct();
-        $this->callMethod($testProd,'setAdded');
+        $this->callMethod($testProd, 'setAdded');
         $this->assertInstanceOf(\DateTimeImmutable::class, $testProd->getAdded());
     }
 

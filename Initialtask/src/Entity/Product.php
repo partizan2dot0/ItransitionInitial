@@ -62,6 +62,7 @@ class Product
     /**
      * @ORM\Column(name="dtmAdded", type="datetime", nullable=true)
      * @Assert\DateTime
+     *
      * @var string A "Y-m-d H:i:s" formatted value
      */
     private $added;
@@ -111,19 +112,19 @@ class Product
         return $this->stock;
     }
 
-    private function setStock(?int $stock): void
+    private function setStock(?string $stock): void
     {
-        $this->stock = $stock;
+        $this->stock = intval(preg_replace('/[^0-9]/', '', $stock));
     }
 
     public function getCost(): ?float
     {
-        return $this->cost/100;
+        return $this->cost / 100;
     }
 
-    private function setCost(?float $cost): void
+    private function setCost(?string $cost): void
     {
-        $this->cost = intval($cost*100);
+        $this->cost = intval(100 * (float) preg_replace('/[^0-9.]/', '', $cost));
     }
 
     public function getDiscontinued(): ?\DateTimeInterface
@@ -169,8 +170,8 @@ class Product
         $this->setName($productData['Product Name']);
         $this->setCode($productData['Product Code']);
         $this->setDescription($productData['Product Description']);
-        $this->setCost((float) $productData['Cost in GBP']);
-        $this->setStock((int) $productData['Stock']);
+        $this->setCost($productData['Cost in GBP']);
+        $this->setStock($productData['Stock']);
 //        $this->setAdded($now);
         $this->setDiscontinued($productData['Discontinued']);
     }

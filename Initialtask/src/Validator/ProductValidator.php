@@ -1,35 +1,37 @@
 <?php
 
-
 namespace App\Validator;
 
 use App\Entity\Product;
 
 class ProductValidator
 {
-
-    public function validate(array $productData): bool
+    public static function validate(array $productData): bool
     {
-        if (self::isValidMinCostAndStock((float) $productData['Cost in GBP'], (int) $productData['Stock']) && self::isValidMaxCost((float) $productData['Cost in GBP'])){
+        $cost = (float) preg_replace('/[^0-9.]/', '', $productData['Cost in GBP']);
+        $stok = (int) preg_replace('/[^0-9]/', '', $productData['Stock']);
+        if (self::isValidMinCostAndStock($cost, $stok) && self::isValidMaxCost($cost)) {
             return true;
         }
+
         return false;
     }
 
-    private function isValidMinCostAndStock(float $cost, int $stock): bool
+    private static function isValidMinCostAndStock(float $cost, int $stock): bool
     {
-        if (( $cost < Product::MIN_COST && $stock < Product::MIN_STOCK)) {
+        if (($cost < Product::MIN_COST && $stock < Product::MIN_STOCK)) {
             return false;
         }
+
         return true;
     }
 
-    private function isValidMaxCost(float $cost): bool
+    private static function isValidMaxCost(float $cost): bool
     {
-        if  ($cost > Product::MAX_COST) {
+        if ($cost > Product::MAX_COST) {
             return false;
         }
+
         return true;
     }
-
 }
