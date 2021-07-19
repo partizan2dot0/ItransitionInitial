@@ -1,26 +1,30 @@
 version: "3.3"
 services:
+  php-fpm:
+    depends_on:
+      - mysql
+    image: webdevops/php-dev:7.4
+    hostname: php-fpm
+    volumes:
+      - "./:/app"
+    working_dir: "/app"
   mysql:
     image: mysql:5.7
+    container_name: dbms-container
+    env_file:
+      - ./.env.local
     hostname: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: importTest
       VIRTUAL_HOST: mysql.dev.loc
     ports:
       - "3306:3306"
     volumes:
       - ./docker:/docker-entrypoint-initdb.d
-  php-fpm:
-    image: php:7.4-cli
-    hostname: php-fpm
-    volumes:
-      - "./:/app"
-    working_dir: "/app"
-    depends_on:
-      - mysql
   nginx:
     image: webdevops/nginx
+    depends_on:
+      - mysql
+      - php-fpm
     hostname: nginx
     environment:
       WEB_DOCUMENT_ROOT: /app/public
@@ -29,5 +33,3 @@ services:
       - "80:80"
     volumes:
       - "./:/app"
-    depends_on:
-      - php-fpm
