@@ -16,7 +16,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProductsImportCommand extends Command
 {
-    protected static $defaultDescription = 'import products from *.csv file';
 
     private $entityManager;
     private $container;
@@ -46,8 +45,6 @@ class ProductsImportCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $testMode = $input->getOption('testMode');  // if running:  products:import --testMode  == test mode;
-
-        $now = new \DateTimeImmutable('now');
 
         $filePath = $this->container->getParameter('filepath');
 

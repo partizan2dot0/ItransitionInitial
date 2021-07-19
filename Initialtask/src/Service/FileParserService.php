@@ -3,8 +3,9 @@
 namespace App\Service;
 
 use App\Repository\FileParserRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
-class FileParserService
+class FileParserService extends ServiceEntityRepository
 {
     private $fileName = 'stock.csv';
 

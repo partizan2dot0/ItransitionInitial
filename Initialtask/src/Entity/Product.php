@@ -166,13 +166,11 @@ class Product
 
     public function __construct(array $productData)
     {
-//        $now = new \DateTimeImmutable('now');
         $this->setName($productData['Product Name']);
         $this->setCode($productData['Product Code']);
         $this->setDescription($productData['Product Description']);
         $this->setCost($productData['Cost in GBP']);
         $this->setStock($productData['Stock']);
-//        $this->setAdded($now);
         $this->setDiscontinued($productData['Discontinued']);
     }
 }

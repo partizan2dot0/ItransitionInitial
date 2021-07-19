@@ -4,7 +4,7 @@ namespace App\Entity;
 
 class ProductTest extends \PHPUnit\Framework\TestCase
 {
-    private function createTestProduct()
+    private function createTestProduct(): Product
     {
         $productData = [
             'Product Name' => 'tName',
@@ -36,32 +36,32 @@ class ProductTest extends \PHPUnit\Framework\TestCase
         return $method->invokeArgs($object, $parameters);
     }
 
-    public function testGetCost()
+    public function testGetCost(): void
     {
         $this->assertIsFloat($this->createTestProduct()->getCost());
     }
 
-    public function testGetName()
+    public function testGetName(): void
     {
         $this->assertIsString($this->createTestProduct()->getName());
     }
 
-    public function testGetCode()
+    public function testGetCode(): void
     {
         $this->assertIsString($this->createTestProduct()->getCode());
     }
 
-    public function testGetStock()
+    public function testGetStock(): void
     {
         $this->assertIsInt($this->createTestProduct()->getStock());
     }
 
-    public function testGetDescription()
+    public function testGetDescription(): void
     {
         $this->assertIsString($this->createTestProduct()->getDescription());
     }
 
-    public function testSetDescription()
+    public function testSetDescription(): void
     {
         $newDesc = 'newDescription';
         $testProd = $this->createTestProduct();
@@ -69,7 +69,7 @@ class ProductTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($testProd->getDescription(), $newDesc);
     }
 
-    public function testSetCost()
+    public function testSetCost(): void
     {
         $newCost = 100.55;
         $testProd = $this->createTestProduct();
@@ -77,12 +77,12 @@ class ProductTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($testProd->getCost(), $newCost);
     }
 
-    public function testGetAdded()
+    public function testGetAdded(): void
     {
         $this->assertInstanceOf(\DateTimeImmutable::class, $this->createTestProduct()->getAdded());
     }
 
-    public function testSetDiscontinued()
+    public function testSetDiscontinued(): void
     {
         $newDiscounted = 'yes';
         $testProd = $this->createTestProduct();
@@ -90,7 +90,7 @@ class ProductTest extends \PHPUnit\Framework\TestCase
         $this->assertNotEmpty($testProd->getDiscontinued());
     }
 
-    public function testSetCode()
+    public function testSetCode(): void
     {
         $newCode = 'newCode';
         $testProd = $this->createTestProduct();
@@ -98,19 +98,19 @@ class ProductTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($testProd->getCode(), $newCode);
     }
 
-    public function testGetDiscontinued()
+    public function testGetDiscontinued(): void
     {
         $this->assertInstanceOf(\DateTimeImmutable::class, $this->createTestProduct()->getDiscontinued());
     }
 
-    public function testSetAdded()
+    public function testSetAdded(): void
     {
         $testProd = $this->createTestProduct();
         $this->callMethod($testProd, 'setAdded');
         $this->assertInstanceOf(\DateTimeImmutable::class, $testProd->getAdded());
     }
 
-    public function testSetName()
+    public function testSetName(): void
     {
         $newName = 'newName';
         $testProd = $this->createTestProduct();
@@ -118,7 +118,7 @@ class ProductTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($testProd->getName(), $newName);
     }
 
-    public function testSetStock()
+    public function testSetStock(): void
     {
         $newStock = 333;
         $testProd = $this->createTestProduct();
